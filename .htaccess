@@ -1,5 +1,9 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
+
+    # Exclude unzip_deploy.php from being rewritten to public folder
+    RewriteCond %{REQUEST_URI} !/unzip_deploy\.php
+
     # Routing through public folder, useful for shared hosting main domains
     # where user is unable to set document root
     RewriteRule ^(.*)$ public/$1 [L]
