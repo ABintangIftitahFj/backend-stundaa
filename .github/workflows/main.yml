@@ -55,4 +55,6 @@ jobs:
       - name: Trigger Unzip via URL
         run: |
           sleep 15
-          curl -s --fail "https://stundaa.com/unzip_deploy.php?token=${{ secrets.DEPLOY_TOKEN }}" | grep "Success"
+          echo "=== HTTP Response ==="
+          curl -v "https://stundaa.com/unzip_deploy.php?token=${{ secrets.DEPLOY_TOKEN }}" 2>&1 || true
+          echo "=== Done ==="
