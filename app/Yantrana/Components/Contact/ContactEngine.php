@@ -548,8 +548,6 @@ class ContactEngine extends BaseEngine implements ContactEngineInterface
         if (__isEmpty($contact)) {
             return $this->engineResponse(18, null, __tr('Contact not found.'));
         }
-        $contact->wa_id = maskString($contact->wa_id, 'phone');
-        $contact->email = maskString($contact->email, 'phone');
         $existingGroupIds = $contact->groups->pluck('_id')->toArray();
         $contactArray = $contact->toArray();
 

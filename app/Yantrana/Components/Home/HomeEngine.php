@@ -46,9 +46,12 @@ class HomeEngine extends BaseEngine implements HomeEngineInterface
 
     public function processContactEmail($inputData)
     {
-        if (getAppSettings('enable_recaptcha') && ! $this->verifyRecaptcha($inputData)) {
+        if (getAppSettings('enable_recaptcha') 
+            and (array_get($inputData, 'source') != 'mobile_app')
+            and !$this->verifyRecaptcha($inputData)) {
             return $this->engineReaction(2, null, __tr('Invalid Recaptcha'));
         }
+
         //contact email data
         $emailData = [
             'userName' => $inputData['full_name'],

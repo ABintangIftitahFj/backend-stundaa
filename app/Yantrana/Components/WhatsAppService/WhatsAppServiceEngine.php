@@ -2729,9 +2729,11 @@ class WhatsAppServiceEngine extends BaseEngine implements WhatsAppServiceEngineI
         $interactionMessageData = null;
         $mediaMessageData = null;
         $fromPhoneNumberId = null;
+        $quotedMessageWamid = null;
         if (is_array($request) === true) {
             $messageBody = $request['messageBody'];
             $contactUid = $request['contactUid'];
+            $quotedMessageWamid = $request['quoted_message_wamid'] ?? null;
             if (isset($options['interaction_message_data']) and !empty($options['interaction_message_data'])) {
                 $interactionMessageData = $options['interaction_message_data'];
             }
@@ -2742,11 +2744,12 @@ class WhatsAppServiceEngine extends BaseEngine implements WhatsAppServiceEngineI
             $messageBody = $request->message_body;
             $contactUid = $request->contact_uid;
             $fromPhoneNumberId = $request->from_phone_number_id;
+            $quotedMessageWamid = $request->quoted_message_wamid;
         }
         // options extend
         $options = array_merge([
             'from_phone_number_id' => $fromPhoneNumberId,
-            'messageWamid' => null,
+            'messageWamid' => $quotedMessageWamid,
         ], $options);
 
         $contact = $this->contactRepository->getVendorContact($contactUid, $vendorId);
