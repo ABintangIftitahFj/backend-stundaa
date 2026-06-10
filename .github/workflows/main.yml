@@ -19,12 +19,7 @@ jobs:
           server: stundaa.com
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # The local-dir should be relative to the repo root
-          # Since we initialized git in public_html, root is public_html
           local-dir: ./
-          # remote-dir is usually public_html on the server
-          server-dir: ./public_html/
+          server-dir: ./public_html/v2/
           exclude: |
             **/.git*
-            **/.git*/**
-            **/node_modules/**
