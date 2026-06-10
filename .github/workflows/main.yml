@@ -47,8 +47,8 @@ jobs:
             set ftp:ssl-force no;
             set ssl:verify-certificate no;
             open -u '$FTP_USER','$FTP_PASS' ftp://stundaa.com;
-            put -O /public_html/ deploy.zip;
-            put -O /public_html/ unzip_deploy.php;
+            put -O public_html/ deploy.zip;
+            put -O public_html/ unzip_deploy.php;
             bye;
           "
 
