@@ -15,8 +15,14 @@ jobs:
 
       - name: Create Deployment ZIP
         run: |
-          # Zip everything except .git and other unnecessary files
-          zip -r deploy.zip . -x "*.git*" ".github*" "node_modules/*" "storage/*.key" "vendor/*"
+          # Exclude: .git, .github, node_modules, storage keys, vendor, user uploads
+          zip -r deploy.zip . \
+            -x "*.git*" \
+            -x ".github/*" \
+            -x "node_modules/*" \
+            -x "storage/*.key" \
+            -x "storage/app/*" \
+            -x "vendor/*"
 
       - name: Upload ZIP and Unzipper via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -25,7 +31,6 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
-          # We only want to upload the ZIP and the PHP script
           server-dir: ./public_html/
           exclude: |
             **/*
@@ -34,8 +39,7 @@ jobs:
 
       - name: Trigger Unzip via URL
         run: |
-          # Wait a few seconds for FTP to stabilize
-          sleep 5
-          # Trigger the PHP script
-          curl -s https://stundaa.com/unzip_deploy.php | grep "Success"
-          # If grep fails, the action fails
+          # Wait for FTP upload to stabilize
+          sleep 15
+          # --fail: non-zero exit on HTTP 4xx/5xx
+          curl -s --fail "https://stundaa.com/unzip_deploy.php?token=${{ secrets.DEPLOY_TOKEN }}" | grep "Success"
