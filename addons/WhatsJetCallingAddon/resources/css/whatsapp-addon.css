@@ -1,0 +1,75 @@
+    .lw-phone-wrap{
+        width:360px;
+        max-width:94vw;
+        margin:32px auto;
+        border-radius:28px;
+        overflow:hidden;
+        box-shadow:0 2px 2px rgba(2,6,6,0.6), inset 0 2px 2px rgba(255,255,255,0.02);
+        background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+        border:1px solid rgba(255,255,255,0.03);
+    }
+
+    .lw-whatsapp-call-header {
+        padding:14px 18px;
+        display:flex;
+        align-items:center;
+        gap:12px;
+    }
+    .lw-signal{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px rgba(37,211,102,0.35)}
+    .lw-whatsapp-call-title{font-weight:600;font-size:14px}
+    .lw-whatsapp-call-sub{font-size:12px;opacity:0.9}
+
+    .lw-whatsapp-call-main{
+        padding:22px 20px 28px;
+        text-align:center;
+    }
+    .lw-whatsapp-call-avatar{
+        width:128px;height:128px;margin:10px auto;border-radius:50%;overflow:hidden;box-shadow:0 8px 30px rgba(2,6,6,0.5);
+        border:6px solid rgba(255,255,255,0.06);
+        background:linear-gradient(135deg,#0f8b5a,#053927);
+        display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:700;color:rgba(255,255,255,0.95)
+    }
+    .lw-incoming-call-user-name{margin-top:14px;font-size:18px;font-weight:700}
+    .lw-incoming-call-status{margin-top:6px;font-size:13px;color:var(--muted)}
+
+    .lw-incoming-call-ringing{
+        margin-top:12px;display:flex;gap:8px;align-items:center;justify-content:center
+    }
+    .lw-incoming-call-pulse{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:rgba(8, 140, 1, 0.9);
+      animation:pop 1s infinite ease-in-out;
+    }
+    .lw-incoming-call-pulse:nth-child(2){animation-delay:.2s;opacity:.7}
+    .lw-incoming-call-pulse:nth-child(3){animation-delay:.4s;opacity:.5}
+    @keyframes pop{
+      0%{transform:scale(.3);opacity:.2}
+      50%{transform:scale(1.2);opacity:1}
+      100%{transform:scale(.3);opacity:.2}
+    }
+
+    /* Controls */
+    .lw-incoming-call-controls {
+        margin-top:20px;display:flex;gap:12px;justify-content:center;align-items:center
+    }
+    .lw-incoming-call-control-btn{width:56px;height:56px;border-radius:50%;display:inline-grid;place-items:center;background:var(--glass);border:1px solid rgba(255,255,255,0.04);cursor:pointer;backdrop-filter:blur(6px)}
+    .lw-incoming-call-control-btn .icon{font-size:20px}
+    .lw-incoming-call-control-btn.small{width:48px;height:48px}
+
+    /* Accept / Reject */
+    .lw-incoming-call-actions{display:flex;gap:18px;justify-content:center;margin-top:18px}
+    .lw-incoming-call-btn{padding:10px 18px;border-radius:999px;font-weight:700;border:0;cursor:pointer;min-width:90px}
+    .lw-incoming-call-decline{background:linear-gradient(180deg,#ff5f6d,#ff3b30);box-shadow:0 8px 20px rgba(255,59,48,0.2)}
+    .lw-incoming-call-accept{background:linear-gradient(180deg,#2ecc71,#25d366);box-shadow:0 8px 30px rgba(37,211,102,0.14)}
+     .lw-incoming-call-skip{background:linear-gradient(180deg,#ff5f6d,#ff3b30);box-shadow:0 8px 20px rgba(255,59,48,0.2)}
+
+    .lw-incoming-call-footer {padding:12px 18px;display:flex;justify-content:space-between;align-items:center;font-size:13px;background:linear-gradient(180deg,transparent,rgba(0,0,0,0.08))}
+
+    /* Connected state */
+    .connected .status{color:var(--muted)}
+    .hidden{display:none}
+
+    /* small screen tweaks */
+    @media (max-width:400px){.lw-whatsapp-call-avatar{width:110px;height:110px}} 

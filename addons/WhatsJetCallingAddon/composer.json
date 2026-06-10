@@ -1,0 +1,12 @@
+{
+    "name": "whatsjet-addons/whatsapp-calling-addon",
+    "description": "WhatsJet Calling Addon",
+    "type": "addon",
+    "autoload": {
+        "psr-4": {
+            "Addons\\WhatsJetCallingAddon\\": "src/"
+        }
+    },
+    "require": {
+    }
+}

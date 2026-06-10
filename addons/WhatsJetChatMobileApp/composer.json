@@ -1,0 +1,12 @@
+{
+    "name": "whatsjet-addons/flutter-chat-mobile-app",
+    "description": "WhatsJet Flutter Chat Mobile App",
+    "type": "addon",
+    "autoload": {
+        "psr-4": {
+            "Addons\\WhatsJetChatMobileApp\\": "src/"
+        }
+    },
+    "require": {
+    }
+}
