@@ -1,4 +1,4 @@
-name: Deploy to FTP
+name: Fast Deploy (ZIP + PHP)
 
 on:
   push:
@@ -7,19 +7,35 @@ on:
 
 jobs:
   deploy:
-    name: Deploy
+    name: Build & Deploy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Sync files
+      - name: Create Deployment ZIP
+        run: |
+          # Zip everything except .git and other unnecessary files
+          zip -r deploy.zip . -x "*.git*" ".github*" "node_modules/*" "storage/*.key" "vendor/*"
+
+      - name: Upload ZIP and Unzipper via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: stundaa.com
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
-          server-dir: ./public_html/v2/
+          # We only want to upload the ZIP and the PHP script
+          server-dir: ./public_html/
           exclude: |
-            **/.git*
+            **/*
+            !deploy.zip
+            !unzip_deploy.php
+
+      - name: Trigger Unzip via URL
+        run: |
+          # Wait a few seconds for FTP to stabilize
+          sleep 5
+          # Trigger the PHP script
+          curl -s https://stundaa.com/unzip_deploy.php | grep "Success"
+          # If grep fails, the action fails
