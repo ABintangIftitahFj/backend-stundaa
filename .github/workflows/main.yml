@@ -29,24 +29,28 @@ jobs:
             -x "*.log" \
             -x "tests/*" \
             -x "bootstrap/cache/*"
+          echo "ZIP size: $(du -sh deploy.zip | cut -f1)"
 
-      - name: Show ZIP size
-        run: du -sh deploy.zip
+      - name: Install lftp
+        run: sudo apt-get install -y lftp
 
-      - name: Upload ZIP and Unzipper via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: stundaa.com
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          local-dir: ./
-          server-dir: ./public_html/
-          timeout: 120000
-          exclude: |
-            **/*
-            !deploy.zip
-            !unzip_deploy.php
+      - name: Upload via lftp (with retry + resume)
+        env:
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          lftp -c "
+            set net:timeout 60;
+            set net:max-retries 5;
+            set net:reconnect-interval-base 5;
+            set ftp:ssl-allow yes;
+            set ftp:ssl-force no;
+            set ssl:verify-certificate no;
+            open -u '$FTP_USER','$FTP_PASS' ftp://stundaa.com;
+            put -O /public_html/ deploy.zip;
+            put -O /public_html/ unzip_deploy.php;
+            bye;
+          "
 
       - name: Trigger Unzip via URL
         run: |
