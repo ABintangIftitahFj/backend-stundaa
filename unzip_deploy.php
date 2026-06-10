@@ -1,14 +1,17 @@
 <?php
 /**
  * Stundaa Fast Unzip Script
- * This script extracts a deployment ZIP and replaces public_html content.
- *
- * Requires ?token=<DEPLOY_TOKEN> query param matching DEPLOY_TOKEN env var or hardcoded fallback.
- * Self-deletes after successful extraction.
+ * Reads DEPLOY_TOKEN from:
+ *   1. getenv() - works on VPS/cloud
+ *   2. ../.deploy_token file - works on shared hosting (place file ABOVE public_html)
+ *   3. $_ENV superglobal
  */
 
-// --- Auth ---
-$expectedToken = getenv('DEPLOY_TOKEN');
+// --- Read token ---
+$expectedToken = getenv('DEPLOY_TOKEN')
+    ?: ($_ENV['DEPLOY_TOKEN'] ?? '')
+    ?: (file_exists(__DIR__ . '/../.deploy_token') ? trim(file_get_contents(__DIR__ . '/../.deploy_token')) : '');
+
 $providedToken = $_GET['token'] ?? '';
 
 if (empty($expectedToken) || !hash_equals($expectedToken, $providedToken)) {
@@ -41,14 +44,11 @@ if (!$extracted) {
     die("Error: Extraction failed.");
 }
 
-// Cleanup ZIP
 unlink($zipFile);
 
-// Self-delete this script so it is not an attack surface after deploy
 $self = __FILE__;
 echo "Success: Deployment extracted and cleaned up.";
 
-// Self-delete runs after output flushed
 register_shutdown_function(function () use ($self) {
     if (file_exists($self)) {
         unlink($self);
