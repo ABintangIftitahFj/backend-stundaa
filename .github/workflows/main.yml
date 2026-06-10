@@ -15,14 +15,23 @@ jobs:
 
       - name: Create Deployment ZIP
         run: |
-          # Exclude: .git, .github, node_modules, storage keys, vendor, user uploads
           zip -r deploy.zip . \
             -x "*.git*" \
             -x ".github/*" \
             -x "node_modules/*" \
             -x "storage/*.key" \
             -x "storage/app/*" \
-            -x "vendor/*"
+            -x "storage/logs/*" \
+            -x "storage/framework/cache/*" \
+            -x "storage/framework/sessions/*" \
+            -x "storage/framework/views/*" \
+            -x "vendor/*" \
+            -x "*.log" \
+            -x "tests/*" \
+            -x "bootstrap/cache/*"
+
+      - name: Show ZIP size
+        run: du -sh deploy.zip
 
       - name: Upload ZIP and Unzipper via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -30,8 +39,10 @@ jobs:
           server: stundaa.com
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
           local-dir: ./
           server-dir: ./public_html/
+          timeout: 120000
           exclude: |
             **/*
             !deploy.zip
@@ -39,7 +50,5 @@ jobs:
 
       - name: Trigger Unzip via URL
         run: |
-          # Wait for FTP upload to stabilize
           sleep 15
-          # --fail: non-zero exit on HTTP 4xx/5xx
           curl -s --fail "https://stundaa.com/unzip_deploy.php?token=${{ secrets.DEPLOY_TOKEN }}" | grep "Success"
