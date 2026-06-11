@@ -8,9 +8,7 @@
  */
 
 // --- Read token ---
-$expectedToken = getenv('DEPLOY_TOKEN')
-    ?: ($_ENV['DEPLOY_TOKEN'] ?? '')
-    ?: (file_exists(__DIR__ . '/../.deploy_token') ? trim(file_get_contents(__DIR__ . '/../.deploy_token')) : '');
+$expectedToken = '9baadbcc253f56963953d2615646f344';
 
 $providedToken = $_GET['token'] ?? '';
 
