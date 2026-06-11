@@ -60,6 +60,12 @@ foreach ($cacheDirs as $dir) {
     }
 }
 
+// --- Reset PHP OPcache ---
+if (function_exists('opcache_reset')) {
+    opcache_reset();
+}
+clearstatcache();
+
 unlink($zipFile);
 
 $self = __FILE__;
