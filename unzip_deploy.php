@@ -44,6 +44,22 @@ if (!$extracted) {
     die("Error: Extraction failed.");
 }
 
+// --- Clear Laravel Caches ---
+$storagePath = __DIR__ . '/storage/framework';
+$cacheDirs = ['views', 'cache', 'sessions'];
+
+foreach ($cacheDirs as $dir) {
+    $path = "$storagePath/$dir";
+    if (is_dir($path)) {
+        $files = glob("$path/*");
+        foreach ($files as $file) {
+            if (is_file($file) && basename($file) !== '.gitignore') {
+                unlink($file);
+            }
+        }
+    }
+}
+
 unlink($zipFile);
 
 $self = __FILE__;

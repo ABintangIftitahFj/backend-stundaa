@@ -127,7 +127,7 @@ $appName = getAppSettings('name');
                         <!-- heading -->
                         <div class="lw-title ubuntu-bold">
                             {{ __tr('Engage Your Customers on WhatsApp Like Never Before') }} <span
-                                class="highlight">{!! __tr('__appName__ ', ['__appName__' => $appName]) !!}</span>
+                                class="highlight">{!! __tr('__appName__ application', ['__appName__' => $appName]) !!}</span>
                         </div>
                         <!-- heading -->
                         <!-- description -->

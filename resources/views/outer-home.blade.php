@@ -114,7 +114,7 @@ $appName = getAppSettings('name');
                         <!-- Mashead text and app badges-->
                         <div class="mb-5 mb-lg-0 text-center text-lg-start">
                             <h1 class="display-1  mb-3">{{ __tr('Engage Your Customers on WhatsApp Like Never Before') }}</h1>
-                            <div class="lead display-6 text-muted mt-5 ">{{ __tr('Unlock the full potential of customer engagement with __appName__ - your comprehensive WhatsApp Marketing Platform.', [
+                            <div class="lead display-6 text-muted mt-5 ">{{ __tr('Unlock the full potential of customer engagement with __appName__ application - your comprehensive WhatsApp Marketing Platform.', [
                                 '__appName__' => $appName
                             ]) }}</div>
                         </div>
