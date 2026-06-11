@@ -20,12 +20,17 @@ if (empty($expectedToken) || !hash_equals($expectedToken, $providedToken)) {
 }
 
 // --- Extract ---
-$zipFile  = __DIR__ . '/deploy.zip';
-$extractTo = __DIR__ . '/';
+$zipFile  = file_exists(__DIR__ . '/deploy.zip') 
+    ? __DIR__ . '/deploy.zip' 
+    : __DIR__ . '/../deploy.zip';
+
+$extractTo = file_exists(__DIR__ . '/deploy.zip')
+    ? __DIR__ . '/'
+    : __DIR__ . '/../';
 
 if (!file_exists($zipFile)) {
     http_response_code(404);
-    die("Error: deploy.zip not found.");
+    die("Error: deploy.zip not found at $zipFile");
 }
 
 $zip = new ZipArchive;
