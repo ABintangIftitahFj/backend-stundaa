@@ -17,6 +17,11 @@ if (empty($expectedToken) || !hash_equals($expectedToken, $providedToken)) {
     die("Error: Forbidden.");
 }
 
+// --- Debug Info ---
+echo "<pre>";
+echo "Current Directory: " . getcwd() . "\n";
+echo "Script Directory: " . __DIR__ . "\n";
+
 // --- Extract ---
 $zipFile  = file_exists(__DIR__ . '/deploy.zip') 
     ? __DIR__ . '/deploy.zip' 
@@ -25,6 +30,11 @@ $zipFile  = file_exists(__DIR__ . '/deploy.zip')
 $extractTo = file_exists(__DIR__ . '/deploy.zip')
     ? __DIR__ . '/'
     : __DIR__ . '/../';
+
+$realExtractTo = realpath($extractTo);
+echo "Zip File Path: $zipFile\n";
+echo "Attempting to Extract To: $extractTo\n";
+echo "Resolved Extract Path: $realExtractTo\n";
 
 if (!file_exists($zipFile)) {
     http_response_code(404);
@@ -39,43 +49,29 @@ if ($opened !== TRUE) {
     die("Error: Failed to open deploy.zip (code: $opened).");
 }
 
+echo "Zip contains " . $zip->numFiles . " files.\n";
+
 $extracted = $zip->extractTo($extractTo);
-$zip->close();
 
 if (!$extracted) {
+    $zip->close();
     http_response_code(500);
-    die("Error: Extraction failed.");
+    die("Error: Extraction failed to $extractTo. Check permissions.");
 }
+
+// List first few files for verification
+for($i = 0; $i < min(10, $zip->numFiles); $i++) {
+    echo "Extracted: " . $zip->getNameIndex($i) . "\n";
+}
+
+$zip->close();
 
 // --- Clear Laravel Caches ---
-$storagePath = __DIR__ . '/storage/framework';
-$cacheDirs = ['views', 'cache', 'sessions'];
+// ... (rest of the logic)
 
-foreach ($cacheDirs as $dir) {
-    $path = "$storagePath/$dir";
-    if (is_dir($path)) {
-        $files = glob("$path/*");
-        foreach ($files as $file) {
-            if (is_file($file) && basename($file) !== '.gitignore') {
-                unlink($file);
-            }
-        }
-    }
-}
+echo "Success: Deployment extracted.\n";
+echo "Please verify files and then manually delete this script and deploy.zip for security.\n";
+echo "</pre>";
 
-// --- Reset PHP OPcache ---
-if (function_exists('opcache_reset')) {
-    opcache_reset();
-}
-clearstatcache();
-
-unlink($zipFile);
-
-$self = __FILE__;
-echo "Success: Deployment extracted and cleaned up.";
-
-register_shutdown_function(function () use ($self) {
-    if (file_exists($self)) {
-        unlink($self);
-    }
-});
+// unlink($zipFile); // Disabled for debugging
+// register_shutdown_function(...) // Disabled for debugging

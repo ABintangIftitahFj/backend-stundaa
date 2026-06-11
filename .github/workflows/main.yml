@@ -29,6 +29,7 @@ jobs:
             -x "public/argon/*" \
             -x "public/media-storage/*"
           echo "ZIP size: $(du -sh deploy.zip | cut -f1)"
+          unzip -l deploy.zip | head -n 20
 
       - name: Upload ZIP to public_html
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
