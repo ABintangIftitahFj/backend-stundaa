@@ -31,7 +31,7 @@ jobs:
           echo "ZIP size: $(du -sh deploy.zip | cut -f1)"
           unzip -l deploy.zip | head -n 20
 
-      - name: Upload ZIP to public_html
+      - name: Upload ZIP and Test File to public_html
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: stundaa.com
@@ -42,18 +42,7 @@ jobs:
           exclude: |
             **/*
             !deploy.zip
-
-      - name: Upload Unzipper to public/
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: stundaa.com
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./
-          server-dir: ./public_html/public/
-          exclude: |
-            **/*
-            !unzip_deploy.php
+            !test.txt
 
       - name: Trigger Unzip via URL
         run: |
