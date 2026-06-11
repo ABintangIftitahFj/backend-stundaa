@@ -22,29 +22,41 @@ echo "<pre>";
 echo "Current Directory: " . getcwd() . "\n";
 echo "Script Directory: " . __DIR__ . "\n";
 
+// List files in current directory
+echo "\nFiles in " . __DIR__ . ":\n";
+print_r(scandir(__DIR__));
+
+// List files in parent directory
+echo "\nFiles in " . dirname(__DIR__) . ":\n";
+print_r(scandir(dirname(__DIR__)));
+
 // --- Extract ---
-$zipFile  = file_exists(__DIR__ . '/deploy.zip') 
-    ? __DIR__ . '/deploy.zip' 
-    : __DIR__ . '/../deploy.zip';
+$zipFileInCurrent = __DIR__ . '/deploy.zip';
+$zipFileInParent = dirname(__DIR__) . '/deploy.zip';
 
-$extractTo = file_exists(__DIR__ . '/deploy.zip')
-    ? __DIR__ . '/'
-    : __DIR__ . '/../';
-
-$realExtractTo = realpath($extractTo);
-echo "Zip File Path: $zipFile\n";
-echo "Attempting to Extract To: $extractTo\n";
-echo "Resolved Extract Path: $realExtractTo\n";
-
-if (!file_exists($zipFile)) {
+if (file_exists($zipFileInCurrent)) {
+    $zipFile = $zipFileInCurrent;
+    $extractTo = __DIR__ . '/../'; // Extract from public/ to root public_html
+    echo "\nFound deploy.zip in CURRENT directory.\n";
+} elseif (file_exists($zipFileInParent)) {
+    $zipFile = $zipFileInParent;
+    $extractTo = dirname(__DIR__) . '/'; // Extract in root public_html
+    echo "\nFound deploy.zip in PARENT directory.\n";
+} else {
     http_response_code(404);
-    die("Error: deploy.zip not found at $zipFile");
+    die("\nError: deploy.zip NOT FOUND in current or parent directory.");
 }
+
+echo "Final Zip File Path: $zipFile\n";
+echo "File Size: " . filesize($zipFile) . " bytes\n";
+echo "File Permissions: " . substr(sprintf('%o', fileperms($zipFile)), -4) . "\n";
 
 $zip = new ZipArchive;
 $opened = $zip->open($zipFile);
 
 if ($opened !== TRUE) {
+    echo "\nZipArchive Open Error Code: $opened\n";
+    // Reference codes: 19 = Not a zip archive (or can't find it), 11 = Can't open
     http_response_code(500);
     die("Error: Failed to open deploy.zip (code: $opened).");
 }
