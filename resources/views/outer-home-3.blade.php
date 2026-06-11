@@ -161,7 +161,7 @@
                 <div class="text-white text-center">
                     <!-- heading -->
                     <div class="lw-masthead-title fw-bolder">
-                        {{ __tr('Transform Customer Engagement with WhatsApp – Experience the Power of __appName__', [
+                        {{ __tr('Transform Customer Engagement with WhatsApp – Experience the Power of __appName__ application', [
                             '__appName__' => $appName,
                         ]) }}
                     </div>
