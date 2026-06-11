@@ -982,8 +982,7 @@
             </div>
             <hr>
             <div class="text-muted small text-center">
-                <div class="mb-2">&copy; {{ getAppSettings('name') }} {{ __tr(date('Y')) }}.
-                    {{ __tr('All Rights Reserved.') }}</div>
+                <div class="mb-2">&copy; Stundaa 2026. All rights reserved by Stundaa</div>
             </div>
         </div>
     </footer>

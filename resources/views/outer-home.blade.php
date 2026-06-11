@@ -628,7 +628,7 @@ $appName = getAppSettings('name');
         <footer class="bg-black text-center py-5">
             <div class="container px-5">
                 <div class="text-white-50 small">
-                    <div class="mb-2">&copy; {{ getAppSettings('name') }} {{ __tr(date('Y')) }}. {{  __tr('All Rights Reserved.') }}</div>
+                    <div class="mb-2">&copy; Stundaa 2026. All rights reserved by Stundaa</div>
                 </div>
             </div>
         </footer>
