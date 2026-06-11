@@ -781,8 +781,7 @@ $appName = getAppSettings('name');
                 </div>
                 <hr>
                 <div class="copyright-text text-center pb-3">
-                    <p> &copy;{{ getAppSettings('name') }} {{ __tr(date('Y')) }}.
-                        {{ __tr('All Rights Reserved.') }}</p>
+                    <p>&copy; Stundaa 2026. All rights reserved by Stundaa</p>
                 </div>
             </div>
         </footer>
