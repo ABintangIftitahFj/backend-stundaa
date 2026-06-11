@@ -1,15 +1,9 @@
 <?php
 /**
- * Stundaa Fast Unzip Script
- * Reads DEPLOY_TOKEN from:
- *   1. getenv() - works on VPS/cloud
- *   2. ../.deploy_token file - works on shared hosting (place file ABOVE public_html)
- *   3. $_ENV superglobal
+ * Stundaa Fast Unzip Script - Stable Debug Version
  */
 
-// --- Read token ---
 $expectedToken = '9baadbcc253f56963953d2615646f344';
-
 $providedToken = $_GET['token'] ?? '';
 
 if (empty($expectedToken) || !hash_equals($expectedToken, $providedToken)) {
@@ -17,88 +11,49 @@ if (empty($expectedToken) || !hash_equals($expectedToken, $providedToken)) {
     die("Error: Forbidden.");
 }
 
-// --- Debug Info ---
 echo "<pre>";
-echo "Current Directory: " . getcwd() . "\n";
-echo "Script Directory: " . __DIR__ . "\n";
+echo "--- Environment ---\n";
+echo "PHP Version: " . phpversion() . "\n";
+echo "Current Dir: " . getcwd() . "\n";
 
-// List files in current directory
-echo "\nFiles in " . __DIR__ . ":\n";
-print_r(scandir(__DIR__));
+$parentDir = dirname(__DIR__);
+$zipPath = $parentDir . '/deploy.zip';
 
-// List files in parent directory
-echo "\nFiles in " . dirname(__DIR__) . ":\n";
-print_r(scandir(dirname(__DIR__)));
+echo "\n--- File Check ---\n";
+echo "Target Zip Path: $zipPath\n";
 
-// --- Extract ---
-$zipFileInCurrent = __DIR__ . '/deploy.zip';
-$zipFileInParent = dirname(__DIR__) . '/deploy.zip';
-
-if (file_exists($zipFileInCurrent)) {
-    $zipFile = $zipFileInCurrent;
-    $extractTo = __DIR__ . '/../'; // Extract from public/ to root public_html
-    echo "\nFound deploy.zip in CURRENT directory.\n";
-} elseif (file_exists($zipFileInParent)) {
-    $zipFile = $zipFileInParent;
-    $extractTo = dirname(__DIR__) . '/'; // Extract in root public_html
-    echo "\nFound deploy.zip in PARENT directory.\n";
-} else {
-    http_response_code(404);
-    die("\nError: deploy.zip NOT FOUND in current or parent directory.");
-}
-
-echo "Final Zip File Path: $zipFile\n";
-if (file_exists($zipFile)) {
-    echo "File Size: " . filesize($zipFile) . " bytes\n";
-    echo "Is Readable: " . (is_readable($zipFile) ? "Yes" : "No") . "\n";
+if (file_exists($zipPath)) {
+    echo "Status: FOUND\n";
+    echo "Size: " . filesize($zipPath) . " bytes\n";
+    echo "Readable: " . (is_readable($zipPath) ? "Yes" : "No") . "\n";
     
-    // Check magic bytes (first 4 bytes of a ZIP should be PK\x03\x04)
-    $handle = fopen($zipFile, 'rb');
-    if ($handle) {
-        $bytes = fread($handle, 4);
-        fclose($handle);
-        echo "Magic Bytes (Hex): " . bin2hex($bytes) . "\n";
-        if (bin2hex($bytes) !== '504b0304') {
-            echo "WARNING: This does not look like a valid ZIP file header (expected 504b0304).\n";
+    echo "\n--- Attempting Unzip ---\n";
+    $zip = new ZipArchive;
+    $res = $zip->open($zipPath);
+    if ($res === TRUE) {
+        echo "Zip opened successfully. Files count: " . $zip->numFiles . "\n";
+        $extract = $zip->extractTo($parentDir);
+        if ($extract) {
+            echo "SUCCESS: Files extracted to $parentDir\n";
+            // list first 5 files
+            for($i = 0; $i < min(5, $zip->numFiles); $i++) {
+                echo " - " . $zip->getNameIndex($i) . "\n";
+            }
+        } else {
+            echo "ERROR: Extraction failed.\n";
         }
+        $zip->close();
     } else {
-        echo "Error: Could not open file for reading bytes.\n";
+        echo "ERROR: Could not open ZIP. Code: $res\n";
+    }
+} else {
+    echo "Status: NOT FOUND\n";
+    echo "\nChecking current directory instead...\n";
+    $zipPath = __DIR__ . '/deploy.zip';
+    if (file_exists($zipPath)) {
+        echo "Found in current dir. Size: " . filesize($zipPath) . "\n";
+    } else {
+        echo "Not found in current dir either.\n";
     }
 }
-
-$zip = new ZipArchive;
-$opened = $zip->open($zipFile);
-
-if ($opened !== TRUE) {
-    echo "\nZipArchive Open Error Code: $opened\n";
-    // Reference codes: 19 = Not a zip archive (or can't find it), 11 = Can't open
-    http_response_code(500);
-    die("Error: Failed to open deploy.zip (code: $opened).");
-}
-
-echo "Zip contains " . $zip->numFiles . " files.\n";
-
-$extracted = $zip->extractTo($extractTo);
-
-if (!$extracted) {
-    $zip->close();
-    http_response_code(500);
-    die("Error: Extraction failed to $extractTo. Check permissions.");
-}
-
-// List first few files for verification
-for($i = 0; $i < min(10, $zip->numFiles); $i++) {
-    echo "Extracted: " . $zip->getNameIndex($i) . "\n";
-}
-
-$zip->close();
-
-// --- Clear Laravel Caches ---
-// ... (rest of the logic)
-
-echo "Success: Deployment extracted.\n";
-echo "Please verify files and then manually delete this script and deploy.zip for security.\n";
 echo "</pre>";
-
-// unlink($zipFile); // Disabled for debugging
-// register_shutdown_function(...) // Disabled for debugging
