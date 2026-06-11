@@ -48,8 +48,23 @@ if (file_exists($zipFileInCurrent)) {
 }
 
 echo "Final Zip File Path: $zipFile\n";
-echo "File Size: " . filesize($zipFile) . " bytes\n";
-echo "File Permissions: " . substr(sprintf('%o', fileperms($zipFile)), -4) . "\n";
+if (file_exists($zipFile)) {
+    echo "File Size: " . filesize($zipFile) . " bytes\n";
+    echo "Is Readable: " . (is_readable($zipFile) ? "Yes" : "No") . "\n";
+    
+    // Check magic bytes (first 4 bytes of a ZIP should be PK\x03\x04)
+    $handle = fopen($zipFile, 'rb');
+    if ($handle) {
+        $bytes = fread($handle, 4);
+        fclose($handle);
+        echo "Magic Bytes (Hex): " . bin2hex($bytes) . "\n";
+        if (bin2hex($bytes) !== '504b0304') {
+            echo "WARNING: This does not look like a valid ZIP file header (expected 504b0304).\n";
+        }
+    } else {
+        echo "Error: Could not open file for reading bytes.\n";
+    }
+}
 
 $zip = new ZipArchive;
 $opened = $zip->open($zipFile);
